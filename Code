@@ -1,0 +1,92 @@
+<?php
+session_start();
+
+// Set the image paths for each level
+$level1Images = array(
+    'image1.jpg',
+    'image2.jpg',
+    'image3.jpg',
+    // Add more images for level 1
+);
+
+$level2Images = array(
+    'image4.jpg',
+    'image5.jpg',
+    'image6.jpg',
+    // Add more images for level 2
+);
+
+$level3Images = array(
+    'image7.jpg',
+    'image8.jpg',
+    'image9.jpg',
+    // Add more images for level 3
+);
+
+// Set the correct image indices for each level
+$correctImages = array(
+    1, // Index of the correct image for level 1
+    0, // Index of the correct image for level 2
+    2, // Index of the correct image for level 3
+);
+
+// Check if the form is submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $level = $_POST['level'];
+    $selectedImage = $_POST['image'];
+
+    // Verify the selected image against the correct image for the respective level
+    if ($selectedImage == $correctImages[$level - 1]) {
+        // Authentication successful for this level
+        if ($level == 3) {
+            // Authentication successful for all levels
+            echo "Authentication successful!";
+            // Perform further actions or redirect to a secure page
+        } else {
+            // Move to the next level
+            $nextLevel = $level + 1;
+            $_SESSION['level'] = $nextLevel;
+            echo "Proceed to level " . $nextLevel;
+        }
+    } else {
+        // Authentication failed
+        echo "Authentication failed!";
+    }
+}
+
+// Check the current level
+$level = isset($_SESSION['level']) ? $_SESSION['level'] : 1;
+
+// Display the image options for the current level
+$images = array();
+if ($level == 1) {
+    $images = $level1Images;
+} elseif ($level == 2) {
+    $images = $level2Images;
+} elseif ($level == 3) {
+    $images = $level3Images;
+}
+
+// Display the form with image options
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Password Authentication</title>
+</head>
+<body>
+    <h2>Level <?php echo $level; ?> Authentication</h2>
+    <form method="POST">
+        <p>Select the correct image:</p>
+        <?php foreach ($images as $index => $image) { ?>
+            <label>
+                <img src="<?php echo $image; ?>" alt="Image <?php echo $index + 1; ?>" width="200" height="200">
+                <input type="radio" name="image" value="<?php echo $index; ?>" required>
+            </label>
+        <?php } ?>
+        <input type="hidden" name="level" value="<?php echo $level; ?>">
+        <br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
